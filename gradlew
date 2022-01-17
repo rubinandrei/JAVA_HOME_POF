@@ -24,8 +24,8 @@
 
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
-export TERM=cygwin
 PRG="$0"
+export TERM=cygwin
 # Need this for relative symlinks.
 while [ -h "$PRG" ] ; do
     ls=`ls -ld "$PRG"`
