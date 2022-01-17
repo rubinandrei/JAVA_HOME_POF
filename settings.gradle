@@ -1,0 +1,2 @@
+rootProject.name = 'javaprof'
+include 'hw01-gradle'

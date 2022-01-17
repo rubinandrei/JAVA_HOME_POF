@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.otus.rubin.home'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    modules
+    compile.extendsFrom(modules)
+}
+
+dependencies{
+    modules project(':hw01-gradle')
+}
+
+
+task jarAll(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'ru.otus.javaprof.homework.HelloOtus'
+    }
+
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+
+}
