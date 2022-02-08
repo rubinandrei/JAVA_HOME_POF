@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+apply plugin : "java"
+
+group 'ru.otus.rubin.home'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    javaMainClass = "homework.testrunner.TestRunner"
+}
+
+dependencies {
+    testImplementation ('org.junit.jupiter:junit-jupiter-api:5.8.2')
+    testRuntimeOnly ('org.junit.jupiter:junit-jupiter-engine:5.8.2')
+    testImplementation ('org.assertj:assertj-core:3.22.0')
+    implementation ('com.google.guava:guava:31.0.1-jre')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClassName = "homework.testrunner.TestRunner"
+}
