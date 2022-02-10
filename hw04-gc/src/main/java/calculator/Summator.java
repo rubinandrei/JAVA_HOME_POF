@@ -1,12 +1,13 @@
 package calculator;
 
 public class Summator {
-    private int sum;
-    private int prevValue;
-    private int prevPrevValue;
-    private int sumLastThreeValues;
-    private int someValue;
-    private int count;
+    private int sum =0;
+    private int prevValue=0;
+    private int prevPrevValue=0;
+    private int sumLastThreeValues=0;
+    private int someValue=0;
+    private int count=0;
+    int calc = 0;
     //private final List<Data> listValues = new ArrayList<>();
 
 
@@ -22,13 +23,12 @@ public class Summator {
         prevPrevValue = prevValue;
         prevValue = data.getValue();
 
-        int calc = (sumLastThreeValues * sumLastThreeValues / (prevValue + 1 ) - sum);
+        calc = (sumLastThreeValues * sumLastThreeValues / (prevValue + 1) - sum);
         for (var idx = 0; idx < 3; idx++) {
-            someValue += calc;
-            someValue = someValue < 0?
-                    -someValue + count:
-                    someValue + count;
+            someValue = Math.abs(someValue + calc) + count;
         }
+
+
     }
 
     public int getSum() {

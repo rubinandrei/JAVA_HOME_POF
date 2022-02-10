@@ -1,6 +1,7 @@
 package calculator;
 
 public class Data {
+
     private final int value;
 
     public Data(int value) {
