@@ -1,19 +1,13 @@
 package test;
 
-import homework.runner.annatation.OTUSBeforeClass;
 import homework.runner.annatation.OTUSBeforeTest;
 import homework.runner.annatation.OTUSTest;
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
 
 public class TaskTest {
 
-    int count;
+    int count =300;
 
-    @OTUSBeforeClass
-    void setup(){
-       count = 300;
-    }
 
     @OTUSBeforeTest
     void preparationBeforeTest(){

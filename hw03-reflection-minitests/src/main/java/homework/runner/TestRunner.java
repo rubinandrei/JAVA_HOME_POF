@@ -1,8 +1,6 @@
 package homework.runner;
 
-import homework.runner.annatation.OTUSAfterClass;
 import homework.runner.annatation.OTUSAfterTest;
-import homework.runner.annatation.OTUSBeforeClass;
 import homework.runner.annatation.OTUSBeforeTest;
 import homework.runner.annatation.OTUSTest;
 import homework.runner.results.TestResult;
@@ -25,17 +23,13 @@ public class TestRunner {
             TestRunner testRunner = new TestRunner();
             List<Method> testMethods = testRunner.getTestMethods(methods);
             if (testMethods.size() > 0) {
-                Object object = testRunner.initClass(clazz);
-                if (Objects.isNull(object)) {
-                    break;
-                }
                 TestResult result = new TestResult(clazz.getName(), testMethods.size());
-                if (!testRunner.invokeByAnnotations(OTUSBeforeClass.class, object)) {
-                    result.setCountSkip(result.getCountTests());
-                    RESULTS.add(result);
-                    continue;
-                }
                 for (Method method : testMethods) {
+                    Object object = testRunner.initClass(clazz);
+                    if (Objects.isNull(object)) {
+                        result.setCountSkip(result.getCountSkip() + 1);
+                        continue;
+                    }
                     if (testRunner.invokeByAnnotations(OTUSBeforeTest.class, object)) {
                         int passCount = testRunner.invokeTestMethod(method, object) ? result.getCountPass() + 1 : result.getCountPass();
                         result.setCountPass(passCount);
@@ -46,9 +40,6 @@ public class TestRunner {
                         result.setCountSkip(result.getCountSkip() + 1);
                         result.setResultStatus(-1);
                     }
-                }
-                if (!testRunner.invokeByAnnotations(OTUSAfterClass.class, object)) {
-                    result.setResultStatus(1);
                 }
                 RESULTS.add(result);
             }
@@ -64,7 +55,7 @@ public class TestRunner {
             method.invoke(testInstanceClass);
             return true;
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            e.getCause().printStackTrace();
             return false;
         }
 
@@ -74,9 +65,7 @@ public class TestRunner {
         return Arrays.stream(methods).filter(m ->
                 m.isAnnotationPresent(OTUSTest.class)
                         && !m.isAnnotationPresent(OTUSBeforeTest.class)
-                        && !m.isAnnotationPresent(OTUSBeforeClass.class)
                         && !m.isAnnotationPresent(OTUSAfterTest.class)
-                        && !m.isAnnotationPresent(OTUSAfterClass.class)
                         && !(m.getParameterCount() > 0)
         ).toList();
     }
@@ -102,6 +91,7 @@ public class TestRunner {
         try {
             return clazz.getConstructor().newInstance();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }

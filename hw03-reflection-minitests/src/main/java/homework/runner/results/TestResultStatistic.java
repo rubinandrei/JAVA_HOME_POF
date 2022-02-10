@@ -18,7 +18,16 @@ public class TestResultStatistic {
             passed += result.getCountPass();
             skipped += result.getCountSkip();
             failed += result.getCountTests() - result.getCountPass() - result.getCountSkip();
+
+            System.out.printf(" ==== Test class: %s ==== total: %d == passed: %d == failed: %d == skipped: %d ====%n",
+                    result.getTestClassName(),
+                    result.getCountTests(),
+                    result.getCountPass(),
+                    result.getCountTests() - result.getCountPass() - result.getCountSkip(),
+                    result.getCountSkip());
         }
+
+
         System.out.printf(" ==== total: %d == passed: %d == failed: %d == skipped: %d ====%n",totalTests,passed,failed,skipped);
 
 
