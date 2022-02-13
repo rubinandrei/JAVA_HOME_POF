@@ -1,6 +1,6 @@
 
 ## Before:
-### result: Min ~ -Xms1G -Xmx1G
+### result: Oптимальные настройки -Xms1280m -Xmx1280m
 
 ### -Xms256 -Xmx256 ***
 ```heapdump.hprof```
@@ -49,6 +49,8 @@
 
 
 ## After:
+
+### Oптимальные настройки -Xms768m -Xmx768m
 
 ### -Xms256m -Xmx256m
 ```
