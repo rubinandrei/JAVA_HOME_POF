@@ -23,22 +23,31 @@ public class TestRunner {
             TestRunner testRunner = new TestRunner();
             List<Method> testMethods = testRunner.getTestMethods(methods);
             if (testMethods.size() > 0) {
+                List<Method> beforeMethods = testRunner.getBeforeMethods(methods);
+                List<Method> afterMethods = testRunner.getAfterMethods(methods);
                 TestResult result = new TestResult(clazz.getName(), testMethods.size());
                 for (Method method : testMethods) {
+                    boolean skipTests = false;
                     Object object = testRunner.initClass(clazz);
                     if (Objects.isNull(object)) {
                         result.setCountSkip(result.getCountSkip() + 1);
                         continue;
                     }
-                    if (testRunner.invokeByAnnotations(OTUSBeforeTest.class, object)) {
-                        int passCount = testRunner.invokeTestMethod(method, object) ? result.getCountPass() + 1 : result.getCountPass();
+                    if (!beforeMethods.isEmpty()) {
+                        if (testRunner.invokeMethodsHasError(beforeMethods, object)) {
+                            result.setCountSkip(result.getCountSkip() + 1);
+                            result.setResultStatus(-1);
+                            skipTests = true;
+                        }
+                    }
+                    if (!skipTests) {
+                        int passCount = testRunner.invokeMethod(method, object) ? result.getCountPass() + 1 : result.getCountPass();
                         result.setCountPass(passCount);
-                        if (!testRunner.invokeByAnnotations(OTUSAfterTest.class, object)) {
+                    }
+                    if (!afterMethods.isEmpty()) {
+                        if (testRunner.invokeMethodsHasError(afterMethods, object)) {
                             result.setResultStatus(1);
                         }
-                    } else {
-                        result.setCountSkip(result.getCountSkip() + 1);
-                        result.setResultStatus(-1);
                     }
                 }
                 RESULTS.add(result);
@@ -46,10 +55,10 @@ public class TestRunner {
 
         }
 
-      TestResultStatistic.printStatistic(RESULTS);
+        TestResultStatistic.printStatistic(RESULTS);
     }
 
-    private boolean invokeTestMethod(Method method, Object testInstanceClass) {
+    private boolean invokeMethod(Method method, Object testInstanceClass) {
         try {
             method.setAccessible(true);
             method.invoke(testInstanceClass);
@@ -61,6 +70,22 @@ public class TestRunner {
 
     }
 
+    private boolean invokeMethodsHasError(List<Method> methods, Object testInstanceClass) {
+        for (Method method : methods) {
+            try {
+                method.setAccessible(true);
+                method.invoke(testInstanceClass);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.getCause().printStackTrace();
+                return true;
+            }
+        }
+
+        return false;
+
+
+    }
+
     private List<Method> getTestMethods(Method[] methods) {
         return Arrays.stream(methods).filter(m ->
                 m.isAnnotationPresent(OTUSTest.class)
@@ -69,6 +94,7 @@ public class TestRunner {
                         && !(m.getParameterCount() > 0)
         ).toList();
     }
+
 
     private boolean invokeByAnnotations(Class annotation, Object testInstanceClass) {
         Method[] methods = testInstanceClass.getClass().getDeclaredMethods();
@@ -85,6 +111,24 @@ public class TestRunner {
             }
         }
         return true;
+    }
+
+    private List<Method> getBeforeMethods(Method[] methods) {
+        return Arrays.stream(methods).filter(m ->
+                m.isAnnotationPresent(OTUSBeforeTest.class)
+                        && !m.isAnnotationPresent(OTUSTest.class)
+                        && !m.isAnnotationPresent(OTUSAfterTest.class)
+                        && !(m.getParameterCount() > 0)
+        ).toList();
+    }
+
+    private List<Method> getAfterMethods(Method[] methods) {
+        return Arrays.stream(methods).filter(m ->
+                m.isAnnotationPresent(OTUSAfterTest.class)
+                        && !m.isAnnotationPresent(OTUSTest.class)
+                        && !m.isAnnotationPresent(OTUSBeforeTest.class)
+                        && !(m.getParameterCount() > 0)
+        ).toList();
     }
 
     private Object initClass(Class clazz) {
