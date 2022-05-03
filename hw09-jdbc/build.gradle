@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.otus.rubin.home'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+dependencies {
+    dependencies  {
+
+    implementation 'ch.qos.logback:logback-classic:1.2.10'
+    implementation 'org.flywaydb:flyway-core:8.5.9'
+    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.slf4j:slf4j-api:1.7.33'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}
+
+test {
+
+}
