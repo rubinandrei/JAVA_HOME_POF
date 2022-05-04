@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.rubin.home.core.repository.DataTemplate;
 import ru.otus.rubin.home.core.sessionmanager.TransactionManager;
+import ru.otus.rubin.home.crm.annatation.Id;
 import ru.otus.rubin.home.crm.model.Manager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,13 @@ public class DbServiceManagerImpl implements DBServiceManager {
     public Manager saveManager(Manager manager) {
         return transactionManager.doInTransaction(connection -> {
             if (manager.getNo() == null) {
+                boolean isPrimaryKey =
+                        Arrays.stream(manager.getClass().getDeclaredFields())
+                                .filter(x -> x.isAnnotationPresent(Id.class))
+                                .findFirst().get().getAnnotation(Id.class).primaryKey();
+                if (!isPrimaryKey) {
+                    long id = findAll().size();
+                    manager.setNo(++id);                }
                 var managerNo = managerDataTemplate.insert(connection, manager);
                 var createdManager = new Manager(managerNo, manager.getLabel());
                 log.info("created manager: {}", createdManager);

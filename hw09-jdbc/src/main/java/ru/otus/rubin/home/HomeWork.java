@@ -58,7 +58,7 @@ public class HomeWork {
 
         var managerSecond = dbServiceManager.saveManager(new Manager("ManagerSecond"));
         var managerSecondSelected = dbServiceManager.getManager(managerSecond.getNo())
-                .orElseThrow(() -> new RuntimeException("Manager not found, id:" + managerSecond.getNo()));
+                .orElseThrow(() -> new RuntimeException("Manager not found, no:" + managerSecond.getNo()));
         log.info("managerSecondSelected:{}", managerSecondSelected);
 
         dbServiceManager.findAll().forEach( m-> {

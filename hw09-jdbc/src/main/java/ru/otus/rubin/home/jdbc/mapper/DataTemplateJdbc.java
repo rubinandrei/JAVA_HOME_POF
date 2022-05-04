@@ -3,6 +3,7 @@ package ru.otus.rubin.home.jdbc.mapper;
 import ru.otus.rubin.home.core.repository.DataTemplate;
 import ru.otus.rubin.home.core.repository.DataTemplateException;
 import ru.otus.rubin.home.core.repository.executor.DbExecutor;
+import ru.otus.rubin.home.crm.annatation.Id;
 
 
 import java.lang.reflect.Field;
@@ -36,7 +37,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                     EntityClassMetaData entityClassMetaData = (EntityClassMetaData) entityField.get(entitySQLMetaData);
                     var newObject = entityClassMetaData.getConstructor().newInstance();
                     List<Field> fields = entityClassMetaData.getAllFields();
-                    for (Field field :fields) {
+                    for (Field field : fields) {
                         var value = rs.getObject(field.getName());
                         System.out.println("adding field " + field);
                         field.setAccessible(true);
@@ -48,8 +49,8 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                 return null;
             } catch (Exception e) {
                 throw new DataTemplateException(e);
-            }finally {
-                if(entityField!=null){
+            } finally {
+                if (entityField != null) {
                     entityField.setAccessible(false);
                 }
             }
@@ -68,7 +69,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                     entityField.setAccessible(true);
                     EntityClassMetaData entityClassMetaData = (EntityClassMetaData) entityField.get(entitySQLMetaData);
                     var newObject = entityClassMetaData.getConstructor().newInstance();
-                    List<Field> fields  = entityClassMetaData.getAllFields();
+                    List<Field> fields = entityClassMetaData.getAllFields();
                     for (Field field : fields) {
                         var value = rs.getObject(field.getName());
                         field.setAccessible(true);
@@ -97,7 +98,12 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             entityField = EntitySQLMetaDataImpl.class.getDeclaredField("entity");
             entityField.setAccessible(true);
             EntityClassMetaData entityClassMetaData = (EntityClassMetaData) entityField.get(entitySQLMetaData);
-            List<Field> fields = entityClassMetaData.getFieldsWithoutId();
+            List<Field> fields = entityClassMetaData
+                    .getIdField()
+                    .getAnnotation(Id.class)
+                    .primaryKey() ? entityClassMetaData.getFieldsWithoutId()
+                                   :entityClassMetaData.getAllFields();
+
             var values = new ArrayList<>(fields.size());
             for (var field : fields) {
                 field.setAccessible(true);
@@ -108,7 +114,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         } catch (Exception e) {
             System.out.println("DataTemplateJdbc.insert\t" + e);
         } finally {
-            if(entityField != null) {
+            if (entityField != null) {
                 entityField.setAccessible(false);
             }
         }
@@ -133,7 +139,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         } catch (Exception e) {
             System.out.println("DataTemplateJdbc.update\t" + e);
         } finally {
-            if(entityUpdateField != null) {
+            if (entityUpdateField != null) {
                 entityUpdateField.setAccessible(false);
             }
         }

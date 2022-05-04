@@ -1,6 +1,6 @@
 create table manager
 (
-    no   bigserial not null primary key,
+    no   bigserial,
     label varchar(50)
 );
 

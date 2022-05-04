@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import ru.otus.rubin.home.crm.annatation.Id;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
 
@@ -46,12 +48,11 @@ public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
         }
         StringBuilder elemetsNcommas = new StringBuilder();
         StringBuilder valuesNcommas = new StringBuilder();
-        List<Field> fields = entity.getAllFields();
+        boolean prKey = entity.getIdField().getAnnotation(Id.class).primaryKey();
+        List<Field> fields = prKey? entity.getFieldsWithoutId():entity.getAllFields();
         for (Field field : fields) {
-            if(Objects.isNull(field.getAnnotation(Id.class))) {
                 elemetsNcommas.append(field.getName()).append(",");
                 valuesNcommas.append("?").append(",");
-            }
         }
         elemetsNcommas.deleteCharAt(elemetsNcommas.length() - 1);
         valuesNcommas.deleteCharAt(valuesNcommas.length() - 1);

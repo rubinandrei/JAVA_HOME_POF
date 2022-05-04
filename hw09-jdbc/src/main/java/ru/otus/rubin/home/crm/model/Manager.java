@@ -3,7 +3,7 @@ package ru.otus.rubin.home.crm.model;
 import ru.otus.rubin.home.crm.annatation.Id;
 
 public class Manager {
-    @Id
+    @Id(primaryKey = false)
     private Long no;
     private String label;
 
